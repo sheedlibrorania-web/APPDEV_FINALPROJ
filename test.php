@@ -19,5 +19,7 @@ if (isset($_POST['add'])) {
     echo "Result: " . $result;
 }
 ?>
+
+FEATURE A
 </body>
 </html>
