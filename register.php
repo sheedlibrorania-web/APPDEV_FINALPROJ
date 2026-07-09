@@ -69,8 +69,9 @@ if(isset($_POST["register"])){
 
     // error message
     if(!empty($error)){
-    echo "<p>$error</p>";
+    echo "<p style='color:red;'>$error</p>";
     }
+    
 
     // Insert User
     if(empty($error)){
@@ -100,9 +101,6 @@ if(isset($_POST["register"])){
 }
 
 ?>
-
-
-
 
 
 
