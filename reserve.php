@@ -14,6 +14,8 @@ $isLoggedIn = isset($_SESSION["userID"]);
 $error = "";
 $quantityValue = 1;
 $selectedTicketID = 0;
+$showConfirmation = false;
+$paymentMethod = "";
 
 // Load all ticket types
 $tickets = [];
@@ -33,10 +35,12 @@ if($result){
 }
 
 // Reservation process
-if(isset($_POST["reserve"])){
+$showConfirmation = false;
+if(isset($_POST["continue"])){
 
     $selectedTicketID = isset($_POST["ticketID"]) ? (int)$_POST["ticketID"] : 0;
     $quantityValue = isset($_POST["quantity"]) ? (int)$_POST["quantity"] : 1;
+    $paymentMethod = isset($_POST["paymentMethod"]) ? trim($_POST["paymentMethod"]) : "";
 
     // Validation 1 - Ticket must be selected
     if($selectedTicketID <= 0){
@@ -85,31 +89,17 @@ if(isset($_POST["reserve"])){
         }
     }
 
-    // Insert reservation
+    // Validation 6 - Payment method is required
     if(empty($error)){
 
-        $ticketNumber = generateUniqueTicketNumber($conn);
-
-        $userID = (int)$_SESSION["userID"];
-        $ticketID = (int)$ticket["ticketID"];
-        $quantity = (int)$quantityValue;
-
-        $sql = "INSERT INTO reservations
-                (userID, ticketID, ticketNumber, quantity, status, reservationDate)
-
-                VALUES
-
-                ($userID, $ticketID, '$ticketNumber', $quantity, 'Pending', NOW())";
-
-        $result = mysqli_query($conn, $sql);
-
-        if($result){
-            header("Location: myticket.php");
-            exit();
+        if(empty($paymentMethod)){
+            $error = "Please select a payment method.";
         }
-        else{
-            $error = "Reservation failed.";
-        }
+
+    }
+    // Show confirmation page
+    if(empty($error)){
+        $showConfirmation = true;
     }
 }
 
@@ -195,7 +185,11 @@ else{
 
     ?>
 
-    <form action="" method="POST">
+    <!-- SHOWS FORM PAGE -->
+    <?php
+    if(!$showConfirmation){
+    ?>
+    <form action="" method="POST" enctype="multipart/form-data">
 
         <fieldset>
 
@@ -233,35 +227,39 @@ else{
 
                     <tr>
 
-                        <th align="left">Price</th>
+                        <th>Ticket Type</th>
+
+                        <th>Price</th>
+
+                        <th>Remaining</th>
+
+                    </tr>
+
+                    <?php foreach($tickets as $ticket): ?>
+
+                    <tr>
 
                         <td>
 
-                            ₱<?php echo number_format($currentTicket["price"],2); ?>
+                            <?php echo htmlspecialchars($ticket["ticketType"]); ?>
+
+                        </td>
+
+                        <td>
+
+                            ₱<?php echo number_format($ticket["price"],2); ?>
+
+                        </td>
+
+                        <td>
+
+                            <?php echo $ticket["remaining"]; ?>
 
                         </td>
 
                     </tr>
 
-                    <tr>
-
-                        <th align="left">Remaining Tickets</th>
-
-                        <td>
-
-                            <?php echo $currentTicket["remaining"]; ?>
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th align="left">Maximum Allowed</th>
-
-                        <td>4 Tickets</td>
-
-                    </tr>
+                    <?php endforeach; ?>
 
                 </table>
 
@@ -274,18 +272,64 @@ else{
                 <strong>Quantity</strong>
 
             </label>
+                <input
+                    type="number"
+                    name="quantity"
+                    min="1"
+                    max="4"
+                    value="<?php echo htmlspecialchars($quantityValue); ?>"
+                required>
+            <br>
+            <br>
+
+                <label>
+
+                    <strong>Payment Method</strong>
+
+                </label>
+
+                <br>
+
+                <select name="paymentMethod" required>
+
+                    <option value="">-- Select Payment Method --</option>
+
+                    <option value="GCash">GCash</option>
+
+                    <option value="Maya">Maya</option>
+
+                    <option value="Bank Transfer">Bank Transfer</option>
+
+                    <option value="Cash">Cash</option>
+
+                </select>
+            
+
+            <br><br>
+            <br>
+
+            <label>
+
+                <strong>Proof of Payment</strong>
+
+            </label>
 
             <br>
 
             <input
-                type="number"
-                name="quantity"
-                min="1"
-                max="4"
-                value="<?php echo htmlspecialchars($quantityValue); ?>"
-                required>
+                type="file"
+                name="proofOfPayment"
+                accept=".jpg,.jpeg,.png,.webp">
 
-            <br><br>
+            <p>
+
+                <small>
+                Optional.
+                Cash payments do not require proof.
+                Online payments may also upload proof later in "My Ticket."
+                </small>
+
+            </p>
 
             <?php if($currentTicket): ?>
 
@@ -311,9 +355,9 @@ else{
 
             <button
                 type="submit"
-                name="reserve">
+                name="continue">
 
-                Reserve Ticket
+                Review Reservation
 
             </button>
 
@@ -321,7 +365,21 @@ else{
 
     </form>
 
-<?php
+    <?php
+    }
+    else{
+    ?>
+        <h2>Confirm Reservation</h2>
+        <hr>
+        <p>
+            This is the confirmation page.
+        </p>
+    <?php
+    }
+    ?>
+
+
+    <?php
 
 }
 
