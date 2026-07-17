@@ -20,4 +20,22 @@ function getSoldTickets($conn, $ticketID){
 
 }
 
+
+function generateUniqueTicketNumber($conn){
+
+    do{
+        $ticketNumber = "TRC" . random_int(1000, 9999);
+
+        $sql = "SELECT ticketNumber
+                FROM reservations
+                WHERE ticketNumber = '$ticketNumber'";
+
+        $result = mysqli_query($conn, $sql);
+
+    }while($result && mysqli_num_rows($result) > 0);
+
+    return $ticketNumber;
+}
+
 ?>
+

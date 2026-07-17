@@ -119,7 +119,6 @@ if(isset($_POST["register"])){
 </head>
 
 <body>
-
     <h1>Create Account</h1>
 
     <form action="" method="POST">

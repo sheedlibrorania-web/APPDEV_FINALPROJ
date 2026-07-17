@@ -2,134 +2,174 @@
 
 session_start();
 
-$conn = require("includes/db.php");
-require("includes/functions.php");
+$form = "login";
 
-if(!$conn){
-    die("Connection Failed");
+if(isset($_GET["form"])){
+
+    $form = $_GET["form"];
+
 }
-
-/* --------------------------
-   REGULAR TICKET
----------------------------*/
-
-$sql = "SELECT *
-        FROM tickets
-        WHERE ticketType = 'Regular'";
-
-$result = mysqli_query($conn, $sql);
-
-$regular = mysqli_fetch_assoc($result);
-
-$regularSold = getSoldTickets($conn, $regular["ticketID"]);
-
-$regularRemaining = $regular["maxTickets"] - $regularSold;
-
-
-/* --------------------------
-   VIP TICKET
----------------------------*/
-
-$sql = "SELECT *
-        FROM tickets
-        WHERE ticketType = 'VIP'";
-
-$result = mysqli_query($conn, $sql);
-
-$vip = mysqli_fetch_assoc($result);
-
-$vipSold = getSoldTickets($conn, $vip["ticketID"]);
-
-$vipRemaining = $vip["maxTickets"] - $vipSold;
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
 
 <head>
 
-    <meta charset="UTF-8">
     <title>The Row3 Concert</title>
+
+    <link rel="stylesheet" href="css/style.css">
 
 </head>
 
 <body>
 
-    <h1>The Row3 Concert</h1>
+<div class="container">
 
-    <h3>October 18, 2026</h3>
+    <div class="left">
 
-    <h3>FEU TECH</h3>
+        <h1>The Row3 Concert</h1>
 
-    <hr>
+        <p class="description">
 
-    <h2>Regular Ticket</h2>
+            Experience an unforgettable night of music with your favorite artists.
+            Reserve tickets online, manage your reservations,
+            and enjoy a fast and hassle-free admission process.
 
-    <p>
-        Price:
-        ₱<?php echo $regular["price"]; ?>
-    </p>
+        </p>
 
-    <p>
-        Remaining Tickets:
-        <?php echo $regularRemaining; ?>
-        /
-        <?php echo $regular["maxTickets"]; ?>
-    </p>
+        <h3>Concert Information</h3>
 
-    <hr>
+        <ul>
 
-    <h2>VIP Ticket</h2>
+            <li>🎵 Live Performances</li>
 
-    <p>
-        Price:
-        ₱<?php echo $vip["price"]; ?>
-    </p>
+            <li>⭐ VIP & Regular Tickets</li>
 
-    <p>
-        Remaining Tickets:
-        <?php echo $vipRemaining; ?>
-        /
-        <?php echo $vip["maxTickets"]; ?>
-    </p>
+            <li>📅 October 25, 2026</li>
 
-    <hr>
+            <li>📍 SMX Convention Center</li>
 
-    <p>
-        Experience an unforgettable night of music,
-        lights, and performances at
-        <strong>The Row3 Concert.</strong>
-    </p>
+        </ul>
 
-    <hr>
+    </div>
 
-    <?php
 
-    if(isset($_SESSION["userID"])){
 
-        echo "<h3>Welcome back, " . $_SESSION["fullName"] . "!</h3>";
 
-        echo '<a href="dashboard.php">
-                <button>Go to Dashboard</button>
-              </a>';
 
-    }
-    else{
+    <div class="right">
 
-        echo '<a href="login.php">
-                <button>Login</button>
-              </a>';
+<?php
 
-        echo "&nbsp;";
+if($form == "login"){
 
-        echo '<a href="register.php">
-                <button>Register</button>
-              </a>';
+?>
 
-    }
+        <h2>Login</h2>
 
-    ?>
+        <form action="login.php" method="POST">
+
+            <input type="text"
+                   name="username"
+                   placeholder="Username"
+                   required>
+
+            <input type="password"
+                   name="password"
+                   placeholder="Password"
+                   required>
+
+            <button type="submit"
+                    name="login">
+
+                Login
+
+            </button>
+
+        </form>
+
+        <p>
+
+            Don't have an account?
+
+            <a href="index.php?form=register">
+
+                Register
+
+            </a>
+
+        </p>
+
+<?php
+
+}
+
+else{
+
+?>
+
+        <h2>Create Account</h2>
+
+        <form action="register.php" method="POST">
+
+            <input type="text"
+                   name="fullname"
+                   placeholder="Full Name"
+                   required>
+
+            <input type="text"
+                   name="username"
+                   placeholder="Username"
+                   required>
+
+            <input type="email"
+                   name="email"
+                   placeholder="Email"
+                   required>
+
+            <input type="password"
+                   name="password"
+                   placeholder="Password"
+                   required>
+
+            <input type="password"
+                   name="confirmPassword"
+                   placeholder="Confirm Password"
+                   required>
+
+            <button type="submit"
+                    name="register">
+
+                Register
+
+            </button>
+
+        </form>
+
+        <p>
+
+            Already have an account?
+
+            <a href="index.php?form=login">
+
+                Login
+
+            </a>
+
+        </p>
+
+<?php
+
+}
+
+?>
+
+    </div>
+
+</div>
 
 </body>
 

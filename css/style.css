@@ -1,0 +1,237 @@
+/* ===== Navigation Bar ===== */
+
+.navbar{
+
+    background-color:#f8b4b4;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px 40px;
+
+    border-radius:10px;
+
+    margin:20px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+
+}
+
+.logo h2{
+
+    margin:0;
+
+    color:#7a0000;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+}
+
+.nav-links{
+
+    display:flex;
+
+    gap:18px;
+
+}
+
+.nav-links a{
+
+    text-decoration:none;
+
+    color:#5a0000;
+
+    font-weight:bold;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+    padding:8px 14px;
+
+    border-radius:6px;
+
+    transition:0.3s;
+
+}
+
+.nav-links a:hover{
+
+    background-color:#e88c8c;
+
+    color:white;
+
+}
+
+
+/* index */
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+body{
+
+    background:#f4f4f4;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+}
+
+.container{
+
+    width:90%;
+
+    max-width:1200px;
+
+    margin:70px auto;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.left{
+
+    width:55%;
+
+}
+
+.left h1{
+
+    font-size:55px;
+
+    color:#c62828;
+
+    margin-bottom:15px;
+
+}
+
+.description{
+
+    font-size:18px;
+
+    color:#555;
+
+    line-height:1.8;
+
+    margin-bottom:30px;
+
+}
+
+.left h3{
+
+    color:#c62828;
+
+    margin-bottom:15px;
+
+}
+
+.left ul{
+
+    line-height:2;
+
+    font-size:18px;
+
+    margin-left:20px;
+
+}
+
+.right{
+
+    width:360px;
+
+    background:white;
+
+    padding:35px;
+
+    border-radius:12px;
+
+    box-shadow:0px 0px 15px rgba(0,0,0,.15);
+
+}
+
+.right h2{
+
+    text-align:center;
+
+    color:#c62828;
+
+    margin-bottom:25px;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-bottom:15px;
+
+    border:1px solid #ccc;
+
+    border-radius:6px;
+
+    font-size:15px;
+
+}
+
+button{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:6px;
+
+    background:#c62828;
+
+    color:white;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+button:hover{
+
+    background:#a61f1f;
+
+}
+
+.right p{
+
+    margin-top:20px;
+
+    text-align:center;
+
+}
+
+.right a{
+
+    color:#c62828;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+}
+
+.right a:hover{
+
+    text-decoration:underline;
+
+}

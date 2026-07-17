@@ -73,7 +73,6 @@ if(isset($_POST["login"])){
     <title>TRC | Login</title>
 </head>
 <body>
-
     <h1>Login</h1>
 
     <?php
