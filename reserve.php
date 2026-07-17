@@ -35,9 +35,7 @@ if($result){
 }
 
 // Reservation process
-$showConfirmation = false;
 if(isset($_POST["continue"])){
-
     $selectedTicketID = isset($_POST["ticketID"]) ? (int)$_POST["ticketID"] : 0;
     $quantityValue = isset($_POST["quantity"]) ? (int)$_POST["quantity"] : 1;
     $paymentMethod = isset($_POST["paymentMethod"]) ? trim($_POST["paymentMethod"]) : "";
@@ -101,6 +99,67 @@ if(isset($_POST["continue"])){
     if(empty($error)){
         $showConfirmation = true;
     }
+}
+
+if(isset($_POST["confirm"])){
+
+        $selectedTicketID = (int)$_POST["ticketID"];
+        $quantityValue = (int)$_POST["quantity"];
+        $paymentMethod = $_POST["paymentMethod"];
+
+        // Get the selected ticket again
+        $sql = "SELECT *
+                FROM tickets
+                WHERE ticketID = '$selectedTicketID'";
+
+        $result = mysqli_query($conn, $sql);
+
+        if(mysqli_num_rows($result) > 0){
+
+            $ticket = mysqli_fetch_assoc($result);
+
+            $ticketNumber = generateUniqueTicketNumber($conn);
+
+            $userID = (int)$_SESSION["userID"];
+            $ticketID = (int)$ticket["ticketID"];
+            $quantity = (int)$quantityValue;
+
+            $sql = "INSERT INTO reservations
+                    (userID,
+                    ticketID,
+                    ticketNumber,
+                    quantity,
+                    paymentMethod,
+                    status,
+                    reservationDate)
+
+                    VALUES
+
+                    ($userID,
+                    $ticketID,
+                    '$ticketNumber',
+                    $quantity,
+                    '$paymentMethod',
+                    'Unpaid',
+                    NOW())";
+
+            $result = mysqli_query($conn,$sql);
+
+            if($result){
+
+                header("Location: myticket.php");
+
+                exit();
+
+            }
+            else{
+
+                $error = "Reservation failed.";
+
+            }
+
+        }
+
 }
 
 // If no ticket selected yet, default to the first ticket for display
@@ -205,13 +264,13 @@ else{
 
                 <option value="">-- Select Ticket --</option>
 
-                <?php foreach($tickets as $ticket): ?>
+                <?php foreach($tickets as $ticketRow): ?>
 
                     <option
-                        value="<?php echo $ticket["ticketID"]; ?>"
-                        <?php echo ($selectedTicketID == $ticket["ticketID"]) ? "selected" : ""; ?>>
+                        value="<?php echo $ticketRow["ticketID"]; ?>"
+                        <?php echo ($selectedTicketID == $ticketRow["ticketID"]) ? "selected" : ""; ?>>
 
-                        <?php echo htmlspecialchars($ticket["ticketType"]); ?>
+                        <?php echo htmlspecialchars($ticketRow["ticketType"]); ?>
 
                     </option>
 
@@ -235,25 +294,25 @@ else{
 
                     </tr>
 
-                    <?php foreach($tickets as $ticket): ?>
+                    <?php foreach($tickets as $ticketRow): ?>
 
                     <tr>
 
                         <td>
 
-                            <?php echo htmlspecialchars($ticket["ticketType"]); ?>
+                            <?php echo htmlspecialchars($ticketRow["ticketType"]); ?>
 
                         </td>
 
                         <td>
 
-                            ₱<?php echo number_format($ticket["price"],2); ?>
+                            ₱<?php echo number_format($ticketRow["price"],2); ?>
 
                         </td>
 
                         <td>
 
-                            <?php echo $ticket["remaining"]; ?>
+                            <?php echo $ticketRow["remaining"]; ?>
 
                         </td>
 
@@ -369,11 +428,138 @@ else{
     }
     else{
     ?>
-        <h2>Confirm Reservation</h2>
+       <h2>🎵 Confirm Your Reservation</h2>
+
         <hr>
+
         <p>
-            This is the confirmation page.
+        Please review your reservation before confirming.
         </p>
+
+        <br>
+
+        <p>
+
+        <strong>Ticket Type:</strong>
+
+        <?php echo htmlspecialchars($ticket["ticketType"]); ?>
+
+        </p>
+
+        <p>
+
+        <strong>Quantity:</strong>
+
+        <?php echo $quantityValue; ?>
+
+        </p>
+
+        <p>
+
+        <strong>Price Per Ticket:</strong>
+
+        ₱<?php echo number_format($ticket["price"],2); ?>
+
+        </p>
+
+        <p>
+
+        <strong>Total Amount:</strong>
+
+        ₱<?php echo number_format($ticket["price"] * $quantityValue,2); ?>
+
+        </p>
+
+        <p>
+
+        <strong>Payment Method:</strong>
+
+        <?php echo htmlspecialchars($paymentMethod); ?>
+
+        </p>
+
+        <?php
+
+        if(!empty($_FILES["proofOfPayment"]["name"])){
+
+        ?>
+
+        <p>
+
+        <strong>Proof of Payment:</strong>
+
+        <?php echo $_FILES["proofOfPayment"]["name"]; ?>
+
+        </p>
+
+        <?php
+
+        }
+        else{
+
+        ?>
+
+        <p>
+
+        <strong>Proof of Payment:</strong>
+
+        None Uploaded
+
+        </p>
+
+        <?php
+
+        }
+
+        ?>
+
+        <hr>
+
+        <p>
+
+        Once you confirm, your reservation will be saved and its status will be set to
+        <strong>UNPAID</strong> until an administrator verifies your payment.
+
+        </p>
+
+        <br>
+
+        <form action="" method="POST">
+
+            <input
+                type="hidden"
+                name="ticketID"
+                value="<?php echo $selectedTicketID; ?>">
+
+            <input
+                type="hidden"
+                name="quantity"
+                value="<?php echo $quantityValue; ?>">
+
+            <input
+                type="hidden"
+                name="paymentMethod"
+                value="<?php echo $paymentMethod; ?>">
+
+            <button
+                type="submit"
+                name="confirm">
+
+                Confirm Reservation
+
+            </button>
+
+            &nbsp;
+
+            <button
+                type="submit"
+                name="cancel">
+
+                Cancel
+
+            </button>
+
+        </form> 
     <?php
     }
     ?>
@@ -382,8 +568,13 @@ else{
     <?php
 
 }
+if(isset($_POST["cancel"])){
 
+    $showConfirmation = false;
+
+}
 ?>
+
 
     <hr>
 
